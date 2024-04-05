@@ -1,4 +1,8 @@
-package com.example.scoreboard;
+package com.example.summary;
+
+import com.example.scoreboard.Event;
+import com.example.scoreboard.ScoreBoard;
+import com.example.scoreboard.ScoreBoardObserver;
 
 import java.util.ArrayList;
 import java.util.List;

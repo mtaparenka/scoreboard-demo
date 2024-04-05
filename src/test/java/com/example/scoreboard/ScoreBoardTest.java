@@ -1,6 +1,7 @@
 package com.example.scoreboard;
 
 import com.example.exceptions.NoActiveMatchException;
+import com.example.summary.StringSummaryGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
