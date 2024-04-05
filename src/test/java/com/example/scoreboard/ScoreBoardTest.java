@@ -1,5 +1,6 @@
-package com.example;
+package com.example.scoreboard;
 
+import com.example.exceptions.NoActiveMatchException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -9,8 +10,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ScoreBoardTest {
     private static final String A_HOME_TEAM = "AHomeTeam";
@@ -25,8 +26,8 @@ class ScoreBoardTest {
         scoreBoard.startMatch(A_HOME_TEAM, AN_AWAY_TEAM);
 
         //then
-        assertEquals(A_HOME_TEAM, scoreBoard.getHomeTeam());
-        assertEquals(AN_AWAY_TEAM, scoreBoard.getAwayTeam());
+        assertEquals(A_HOME_TEAM, scoreBoard.getHomeTeam().orElseThrow());
+        assertEquals(AN_AWAY_TEAM, scoreBoard.getAwayTeam().orElseThrow());
     }
 
     @Test
@@ -38,8 +39,8 @@ class ScoreBoardTest {
         scoreBoard.startMatch(A_HOME_TEAM, AN_AWAY_TEAM);
 
         //then
-        assertEquals(0, scoreBoard.getHomeScore());
-        assertEquals(0, scoreBoard.getAwayScore());
+        assertEquals(0, scoreBoard.getHomeScore().orElseThrow());
+        assertEquals(0, scoreBoard.getAwayScore().orElseThrow());
     }
 
     @ParameterizedTest
@@ -69,8 +70,8 @@ class ScoreBoardTest {
         scoreBoard.updateScore(expectedHomeScore, expectedAwayScore);
 
         //then
-        assertEquals(expectedHomeScore, scoreBoard.getHomeScore());
-        assertEquals(expectedAwayScore, scoreBoard.getAwayScore());
+        assertEquals(expectedHomeScore, scoreBoard.getHomeScore().orElseThrow());
+        assertEquals(expectedAwayScore, scoreBoard.getAwayScore().orElseThrow());
     }
 
     @Test
@@ -109,8 +110,8 @@ class ScoreBoardTest {
         scoreBoard.finishMatch();
 
         //then
-        assertNull(scoreBoard.getHomeTeam());
-        assertNull(scoreBoard.getAwayTeam());
+        assertTrue(scoreBoard.getHomeTeam().isEmpty());
+        assertTrue(scoreBoard.getAwayTeam().isEmpty());
     }
 
     @Test
@@ -147,7 +148,6 @@ class ScoreBoardTest {
         var scoreBoard = new DefaultScoreBoard();
 
         //expect
-        scoreBoard.startMatch(A_HOME_TEAM, AN_AWAY_TEAM);
         assertThrows(
                 NoActiveMatchException.class,
                 scoreBoard::finishMatch,
@@ -157,13 +157,16 @@ class ScoreBoardTest {
     @Test
     public void shouldSortSummaryByTotalScore() {
         //given
-        var scoreBoardA = new DefaultScoreBoard();
-        var scoreBoardB = new DefaultScoreBoard();
-        var summaryGenerator = new SummaryGenerator(scoreBoardA, scoreBoardB);
+        var summaryGenerator = new StringSummaryGenerator();
+        var scoreBoardA = new ReportableScoreBoard();
+        var scoreBoardB = new ReportableScoreBoard();
         var homeTeamA = "homeTeamA";
         var awayTeamA = "awayTeamA";
         var homeTeamB = "homeTeamB";
         var awayTeamB = "awayTeamB";
+
+        scoreBoardA.addObserver(summaryGenerator);
+        scoreBoardB.addObserver(summaryGenerator);
 
         //when
         scoreBoardA.startMatch(homeTeamA, awayTeamA);
@@ -171,7 +174,7 @@ class ScoreBoardTest {
         scoreBoardA.updateScore(1, 0);
 
         //then
-        var summary = summaryGenerator.generateReport();
+        var summary = summaryGenerator.generateSummary();
         assertEquals("""
                 1. homeTeamA 1 - awayTeamA 0
                 2. homeTeamB 0 - awayTeamB 0""",
@@ -181,11 +184,17 @@ class ScoreBoardTest {
     @Test
     public void shouldSortMatchesWithSameScoreLIFO() {
         //given
-        var scoreBoardA = new DefaultScoreBoard();
-        var scoreBoardB = new DefaultScoreBoard();
-        var scoreBoardC = new DefaultScoreBoard();
-        var scoreBoardD = new DefaultScoreBoard();
-        var summaryGenerator = new SummaryGenerator(scoreBoardA, scoreBoardB, scoreBoardC, scoreBoardD);
+        var summaryGenerator = new StringSummaryGenerator();
+        var scoreBoardA = new ReportableScoreBoard();
+        var scoreBoardB = new ReportableScoreBoard();
+        var scoreBoardC = new ReportableScoreBoard();
+        var scoreBoardD = new ReportableScoreBoard();
+
+        scoreBoardA.addObserver(summaryGenerator);
+        scoreBoardB.addObserver(summaryGenerator);
+        scoreBoardC.addObserver(summaryGenerator);
+        scoreBoardD.addObserver(summaryGenerator);
+
         var homeTeamA = "homeTeamA";
         var awayTeamA = "awayTeamA";
         var homeTeamB = "homeTeamB";
