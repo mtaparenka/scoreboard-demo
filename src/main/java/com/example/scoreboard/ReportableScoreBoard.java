@@ -4,6 +4,17 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * An implementation of <code>{@link ObservableScoreBoard}</code> interface.
+ * This implementation can be monitored by observers which allows, for example,
+ * generate summary of all active matches.
+ * <pre>{@code
+ *     var scoreBoardA = new ReportableScoreBoard();
+ *     scoreBoardA.addObserver(summaryGenerator);
+ *     summaryGenerator.generateSummary();
+ * }</pre>
+ * The implementation is Thread-unsafe.
+ **/
 public final class ReportableScoreBoard implements ObservableScoreBoard {
     private final ScoreBoard defaultScoreBoard;
     private final Set<ScoreBoardObserver> observers;

@@ -6,6 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
+/**
+ * A basic implementation of <code>{@link ScoreBoard}</code> interface.
+ * The implementation is Thread-unsafe.
+ **/
 public final class DefaultScoreBoard implements ScoreBoard {
     private static final String TEAMS_NAMES_INVALID_MESSAGE = "Teams names should not be null or empty. Provided names: [%s, %s]";
     private static final String NO_ACTIVE_MATCH_EXCEPTION_MESSAGE = "An active match was not found";
@@ -21,6 +25,11 @@ public final class DefaultScoreBoard implements ScoreBoard {
         isMatchActive = false;
     }
 
+    /**
+     * Starts a new match on the scoreboard. Initial score is 0-0.
+     * @param homeTeam home team name
+     * @param awayTeam away team name
+     */
     @Override
     public void startMatch(String homeTeam, String awayTeam) {
         if (!isMatchActive) {

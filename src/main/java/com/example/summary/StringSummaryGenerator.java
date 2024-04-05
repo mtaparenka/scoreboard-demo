@@ -7,6 +7,21 @@ import com.example.scoreboard.ScoreBoardObserver;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Observer implementation of <code>{@link SummaryGenerator}</code>.
+ * Generates summary as <code>{@link String}</code> data in following format:
+ *
+ * <pre>
+ * 1. Uruguay 6 - Italy 6
+ * 2. Spain 10 - Brazil 2
+ * 3. Mexico 0 - Canada 5
+ * 4. Argentina 3 - Australia 1
+ * 5. Germany 2 - France 2
+ * </pre>
+ * The summary is sorted by total score. The matches with the
+ * same total score will be returned ordered by the most recently started match in the
+ * scoreboard.
+ */
 public final class StringSummaryGenerator implements SummaryGenerator<String>, ScoreBoardObserver {
     private final List<ScoreBoard> scoreBoards;
 
