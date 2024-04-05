@@ -160,23 +160,99 @@ class ScoreBoardTest {
         var summaryGenerator = new StringSummaryGenerator();
         var scoreBoardA = new ReportableScoreBoard();
         var scoreBoardB = new ReportableScoreBoard();
+        var scoreBoardC = new ReportableScoreBoard();
         var homeTeamA = "homeTeamA";
         var awayTeamA = "awayTeamA";
         var homeTeamB = "homeTeamB";
         var awayTeamB = "awayTeamB";
+        var homeTeamC = "homeTeamC";
+        var awayTeamC = "awayTeamC";
 
         scoreBoardA.addObserver(summaryGenerator);
         scoreBoardB.addObserver(summaryGenerator);
+        scoreBoardC.addObserver(summaryGenerator);
 
         //when
         scoreBoardA.startMatch(homeTeamA, awayTeamA);
         scoreBoardB.startMatch(homeTeamB, awayTeamB);
+        scoreBoardC.startMatch(homeTeamC, awayTeamC);
         scoreBoardA.updateScore(1, 0);
+        scoreBoardC.updateScore(2, 0);
 
         //then
         var summary = summaryGenerator.generateSummary();
         assertEquals("""
-                1. homeTeamA 1 - awayTeamA 0
+                1. homeTeamC 2 - awayTeamC 0
+                2. homeTeamA 1 - awayTeamA 0
+                3. homeTeamB 0 - awayTeamB 0""",
+                summary);
+    }
+
+    @Test
+    public void shouldNotIncludeStoppedMatchIntoSummary() {
+        //given
+        var summaryGenerator = new StringSummaryGenerator();
+        var scoreBoardA = new ReportableScoreBoard();
+        var scoreBoardB = new ReportableScoreBoard();
+        var scoreBoardC = new ReportableScoreBoard();
+        var homeTeamA = "homeTeamA";
+        var awayTeamA = "awayTeamA";
+        var homeTeamB = "homeTeamB";
+        var awayTeamB = "awayTeamB";
+        var homeTeamC = "homeTeamC";
+        var awayTeamC = "awayTeamC";
+
+        scoreBoardA.addObserver(summaryGenerator);
+        scoreBoardB.addObserver(summaryGenerator);
+        scoreBoardC.addObserver(summaryGenerator);
+
+        //when
+        scoreBoardA.startMatch(homeTeamA, awayTeamA);
+        scoreBoardB.startMatch(homeTeamB, awayTeamB);
+        scoreBoardC.startMatch(homeTeamC, awayTeamC);
+        scoreBoardA.updateScore(1, 0);
+        scoreBoardC.updateScore(2, 0);
+        scoreBoardA.finishMatch();
+
+        //then
+        var summary = summaryGenerator.generateSummary();
+        assertEquals("""
+                1. homeTeamC 2 - awayTeamC 0
+                2. homeTeamB 0 - awayTeamB 0""",
+                summary);
+    }
+
+    @Test
+    public void shouldNotIncludeMatchIntoSummaryWithNoObservers() {
+        //given
+        var summaryGenerator = new StringSummaryGenerator();
+        var scoreBoardA = new ReportableScoreBoard();
+        var scoreBoardB = new ReportableScoreBoard();
+        var scoreBoardC = new ReportableScoreBoard();
+        var homeTeamA = "homeTeamA";
+        var awayTeamA = "awayTeamA";
+        var homeTeamB = "homeTeamB";
+        var awayTeamB = "awayTeamB";
+        var homeTeamC = "homeTeamC";
+        var awayTeamC = "awayTeamC";
+
+        scoreBoardA.addObserver(summaryGenerator);
+        scoreBoardA.removeObserver(summaryGenerator);
+
+        scoreBoardB.addObserver(summaryGenerator);
+        scoreBoardC.addObserver(summaryGenerator);
+
+        //when
+        scoreBoardA.startMatch(homeTeamA, awayTeamA);
+        scoreBoardB.startMatch(homeTeamB, awayTeamB);
+        scoreBoardC.startMatch(homeTeamC, awayTeamC);
+        scoreBoardA.updateScore(1, 0);
+        scoreBoardC.updateScore(2, 0);
+
+        //then
+        var summary = summaryGenerator.generateSummary();
+        assertEquals("""
+                1. homeTeamC 2 - awayTeamC 0
                 2. homeTeamB 0 - awayTeamB 0""",
                 summary);
     }
