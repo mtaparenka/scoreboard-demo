@@ -1,5 +1,6 @@
 package com.example.scoreboard;
 
+import com.example.exceptions.MatchAlreadyStartedException;
 import com.example.exceptions.NoActiveMatchException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,11 +23,15 @@ public final class DefaultScoreBoard implements ScoreBoard {
 
     @Override
     public void startMatch(String homeTeam, String awayTeam) {
-        validateNames(homeTeam, awayTeam);
+        if (!isMatchActive) {
+            validateNames(homeTeam, awayTeam);
 
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
-        isMatchActive = true;
+            this.homeTeam = homeTeam;
+            this.awayTeam = awayTeam;
+            isMatchActive = true;
+        } else {
+            throw new MatchAlreadyStartedException("Match already started");
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.scoreboard;
 
+import com.example.exceptions.MatchAlreadyStartedException;
 import com.example.exceptions.NoActiveMatchException;
 import com.example.summary.StringSummaryGenerator;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,18 @@ class ScoreBoardTest {
         //then
         assertEquals(A_HOME_TEAM, scoreBoard.getHomeTeam().orElseThrow());
         assertEquals(AN_AWAY_TEAM, scoreBoard.getAwayTeam().orElseThrow());
+    }
+
+    @Test
+    public void shouldThrowAnExceptionWhenStartMatchWithAlreadyStartedMatch() {
+        //given
+        var scoreBoard = new DefaultScoreBoard();
+
+        //when
+        scoreBoard.startMatch(A_HOME_TEAM, AN_AWAY_TEAM);
+
+        //expect
+        assertThrows(MatchAlreadyStartedException.class, () -> scoreBoard.startMatch(A_HOME_TEAM, AN_AWAY_TEAM));
     }
 
     @Test
